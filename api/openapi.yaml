@@ -1,0 +1,104 @@
+openapi: 3.0.0
+info:
+  contact:
+    email: sbirudavolu@umass.edu
+    name: Sathvik Birudavolu
+  description: Video queue service
+  license:
+    name: MIT
+  title: queueservice
+  version: 0.0.1
+servers:
+- url: http://galactus.player/v1
+paths:
+  /queue/{code}/add:
+    post:
+      operationId: addVideo
+      parameters:
+      - description: ID of Room
+        explode: false
+        in: path
+        name: code
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Video'
+          description: video id and index in queue
+        "400":
+          content: {}
+          description: Invalid room code supplied
+        "404":
+          content: {}
+          description: Room not found
+      summary: Add video to the queue
+      tags:
+      - queue
+  /queue/{code}:
+    get:
+      description: Returns the queue
+      operationId: getQueue
+      parameters:
+      - description: ID of Room
+        explode: false
+        in: path
+        name: code
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoQueue'
+          description: successful operation
+        "400":
+          content: {}
+          description: Invalid room code supplied
+        "404":
+          content: {}
+          description: Room not found
+components:
+  schemas:
+    Video:
+      description: Video entry
+      example:
+        addedAt: 2000-01-23T04:56:07.000+00:00
+        url: https://blah.com/foo.mp4
+        id: abc123
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        addedAt:
+          format: date-time
+          type: string
+      title: Video
+      type: object
+      xml:
+        name: Video
+    VideoQueue:
+      description: Queue of videos
+      example:
+        lastEdited: 2000-01-23T04:56:07.000+00:00
+        queue: []
+      properties:
+        queue:
+          items:
+            $ref: '#/components/schemas/Video'
+          type: array
+        lastEdited:
+          format: date-time
+          type: string
+      title: VideoQueue
+      type: object
+      xml:
+        name: VideoQueue
