@@ -23,6 +23,12 @@ paths:
         schema:
           type: string
         style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddVideoRequest'
+        description: video url
       responses:
         "200":
           content:
@@ -67,16 +73,30 @@ paths:
           description: Room not found
 components:
   schemas:
+    AddVideoRequest:
+      description: Video request
+      example:
+        url: https://blah.com/foo.mp4
+      properties:
+        url:
+          type: string
+      title: AddVideoRequest
+      type: object
+      xml:
+        name: AddVideoRequest
     Video:
       description: Video entry
       example:
         addedAt: 2000-01-23T04:56:07.000+00:00
         url: https://blah.com/foo.mp4
         id: abc123
+        thumbnailUrl: https://blah.com/foo.mp4
       properties:
         id:
           type: string
         url:
+          type: string
+        thumbnailUrl:
           type: string
         addedAt:
           format: date-time

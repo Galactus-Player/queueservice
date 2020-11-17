@@ -43,5 +43,5 @@ type DefaultApiServicer interface {
 // while the service implementation can ignored with the .openapi-generator-ignore file 
 // and updated with the logic required for the API.
 type QueueApiServicer interface { 
-	AddVideo(string) (interface{}, error)
+	AddVideo(string, AddVideoRequest) (interface{}, error)
 }

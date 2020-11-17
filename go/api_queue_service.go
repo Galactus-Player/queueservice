@@ -11,6 +11,10 @@
 package openapi
 
 import (
+	"crypto/sha256"
+	"fmt"
+	"log"
+	"net/url"
 	"time"
 )
 
@@ -26,8 +30,26 @@ func NewQueueApiService() QueueApiServicer {
 }
 
 // AddVideo - Add video to the queue
-func (s *QueueApiService) AddVideo(code string) (interface{}, error) {
+func (s *QueueApiService) AddVideo(code string, addVideoRequest AddVideoRequest) (interface{}, error) {
+	// TODO - update AddVideo with the required logic for this service method.
 	// Add api_queue_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-	result := Video{Id: "3", Url: "https://youtu.be/NEwcO0QwPAk", AddedAt: time.Now()}
+	thumbnail, err := getThumbnailUrl(addVideoRequest.Url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	videoId := sha256.Sum256([]byte(addVideoRequest.Url))
+	result := Video{Id: string(videoId[:]), Url: addVideoRequest.Url, AddedAt: time.Now(), ThumbnailUrl: thumbnail}
 	return result, nil
+}
+
+func getThumbnailUrl(videoUrl string) (string, error) {
+	u, err := url.Parse(videoUrl)
+	if err != nil {
+		return "", err
+	}
+	q := u.Query()
+	videoId := q.Get("v")
+
+	thumb := fmt.Sprintf("https://img.youtube.com/vi/%s/0.jpg", videoId)
+	return thumb, nil
 }

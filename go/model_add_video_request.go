@@ -10,18 +10,8 @@
 
 package openapi
 
-import (
-	"time"
-)
-
-// Video - Video entry
-type Video struct {
-
-	Id string `json:"id,omitempty"`
+// AddVideoRequest - Video request
+type AddVideoRequest struct {
 
 	Url string `json:"url,omitempty"`
-
-	ThumbnailUrl string `json:"thumbnailUrl,omitempty"`
-
-	AddedAt time.Time `json:"addedAt,omitempty"`
 }

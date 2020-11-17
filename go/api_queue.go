@@ -11,6 +11,7 @@
 package openapi
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -24,12 +25,12 @@ type QueueApiController struct {
 
 // NewQueueApiController creates a default api controller
 func NewQueueApiController(s QueueApiServicer) Router {
-	return &QueueApiController{service: s}
+	return &QueueApiController{ service: s }
 }
 
 // Routes returns all of the api route for the QueueApiController
 func (c *QueueApiController) Routes() Routes {
-	return Routes{
+	return Routes{ 
 		{
 			"AddVideo",
 			strings.ToUpper("Post"),
@@ -40,14 +41,20 @@ func (c *QueueApiController) Routes() Routes {
 }
 
 // AddVideo - Add video to the queue
-func (c *QueueApiController) AddVideo(w http.ResponseWriter, r *http.Request) {
+func (c *QueueApiController) AddVideo(w http.ResponseWriter, r *http.Request) { 
 	params := mux.Vars(r)
 	code := params["code"]
-	result, err := c.service.AddVideo(code)
+	addVideoRequest := &AddVideoRequest{}
+	if err := json.NewDecoder(r.Body).Decode(&addVideoRequest); err != nil {
+		w.WriteHeader(500)
+		return
+	}
+	
+	result, err := c.service.AddVideo(code, *addVideoRequest)
 	if err != nil {
 		w.WriteHeader(500)
 		return
 	}
-
+	
 	EncodeJSONResponse(result, nil, w)
 }
