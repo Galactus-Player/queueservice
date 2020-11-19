@@ -155,7 +155,10 @@ components:
       example:
         lastEdited: 2000-01-23T04:56:07.000+00:00
         queue: []
+        room: 7898
       properties:
+        room:
+          type: string
         queue:
           items:
             $ref: '#/components/schemas/Video'

@@ -16,8 +16,9 @@ import (
 
 // VideoQueue - Queue of videos
 type VideoQueue struct {
+	Room string `json:"room,omitempty" bson:"_id,omitempty"`
 
-	Queue []Video `json:"queue,omitempty"`
+	Queue []Video `json:"queue,omitempty" bson:"queue,omitempty"`
 
-	LastEdited time.Time `json:"lastEdited,omitempty"`
+	LastEdited time.Time `json:"lastEdited,omitempty" bson:"lastEdited,omitempty"`
 }

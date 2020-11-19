@@ -26,6 +26,8 @@ go/api_default_service.go
 go/api_default_service.go
 go/api_queue_service.go
 go/api_queue.go
+go/model_video.go
+go/model_video_queue.go
 go/api.go
 go/routers.go
 main.go

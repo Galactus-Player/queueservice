@@ -2,6 +2,7 @@ package openapi
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -19,14 +20,13 @@ func DbConnect(password string, dbName string) (*Database, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(
-		"mongodb+srv://BSathvik:<pass>@cluster0.hrnmp.mongodb.net/firstTest?retryWrites=true&w=majority",
-	))
+	atlasUrl := fmt.Sprintf("mongodb+srv://BSathvik:%s@cluster0.hrnmp.mongodb.net/%s?retryWrites=true&w=majority", password, dbName)
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(atlasUrl))
 	if err != nil {
 		return nil, err
 	}
 
-	collection := client.Database("testing").Collection("queue")
+	collection := client.Database(dbName).Collection("queue")
 
 	return &Database{client: client, collection: collection}, nil
 }
@@ -34,7 +34,6 @@ func DbConnect(password string, dbName string) (*Database, error) {
 func (db *Database) InsertNewVideo(code string, video Video) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	// _, err := db.collection.InsertOne(ctx, video)
 
 	opts := options.Update().SetUpsert(true)
 	filter := bson.D{{"_id", code}}
@@ -47,7 +46,6 @@ func (db *Database) InsertNewVideo(code string, video Video) error {
 func (db *Database) DeleteVideo(code string, videoId string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	// _, err := db.collection.InsertOne(ctx, video)
 
 	opts := options.Update().SetUpsert(true)
 	filter := bson.D{{"_id", code}}
@@ -55,4 +53,14 @@ func (db *Database) DeleteVideo(code string, videoId string) error {
 
 	_, err := db.collection.UpdateOne(ctx, filter, update, opts)
 	return err
+}
+
+func (db *Database) GetVideoQueue(code string) (VideoQueue, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.D{{"_id", code}}
+	var result VideoQueue
+	err := db.collection.FindOne(ctx, filter).Decode(&result)
+	return result, err
 }
