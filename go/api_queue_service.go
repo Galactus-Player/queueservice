@@ -12,6 +12,7 @@ package openapi
 
 import (
 	"crypto/sha256"
+	b64 "encoding/base64"
 	"fmt"
 	"log"
 	"net/url"
@@ -22,24 +23,29 @@ import (
 // This service should implement the business logic for every endpoint for the QueueApi API.
 // Include any external packages or services that will be required by this service.
 type QueueApiService struct {
+	db *Database
 }
 
 // NewQueueApiService creates a default api service
-func NewQueueApiService() QueueApiServicer {
-	return &QueueApiService{}
+func NewQueueApiService(db *Database) QueueApiServicer {
+	return &QueueApiService{db: db}
 }
 
 // AddVideo - Add video to the queue
 func (s *QueueApiService) AddVideo(code string, addVideoRequest AddVideoRequest) (interface{}, error) {
-	// TODO - update AddVideo with the required logic for this service method.
-	// Add api_queue_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
 	thumbnail, err := getThumbnailUrl(addVideoRequest.Url)
 	if err != nil {
 		log.Fatal(err)
 	}
-	videoId := sha256.Sum256([]byte(addVideoRequest.Url))
-	result := Video{Id: string(videoId[:]), Url: addVideoRequest.Url, AddedAt: time.Now(), ThumbnailUrl: thumbnail}
-	return result, nil
+	timestamp := time.Now()
+	hash := sha256.Sum256([]byte(addVideoRequest.Url + timestamp.String()))
+	videoId := b64.StdEncoding.EncodeToString(hash[:16])
+	video := Video{Id: videoId, Url: addVideoRequest.Url, AddedAt: timestamp, ThumbnailUrl: thumbnail}
+	err = s.db.InsertNewVideo(code, video)
+	if err != nil {
+		return nil, err
+	}
+	return video, nil
 }
 
 func getThumbnailUrl(videoUrl string) (string, error) {
@@ -52,4 +58,13 @@ func getThumbnailUrl(videoUrl string) (string, error) {
 
 	thumb := fmt.Sprintf("https://img.youtube.com/vi/%s/0.jpg", videoId)
 	return thumb, nil
+}
+
+// RemoveVideo - Remove video from the queue
+func (s *QueueApiService) RemoveVideo(code string, removeVideo RemoveVideo) (interface{}, error) {
+	err := s.db.DeleteVideo(code, removeVideo.Id)
+	if err != nil {
+		return nil, err
+	}
+	return removeVideo, nil
 }

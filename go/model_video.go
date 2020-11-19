@@ -16,12 +16,11 @@ import (
 
 // Video - Video entry
 type Video struct {
+	Id string `json:"id,omitempty" bson:"_id,omitempty"`
 
-	Id string `json:"id,omitempty"`
+	Url string `json:"url,omitempty" bson:"url,omitempty"`
 
-	Url string `json:"url,omitempty"`
+	ThumbnailUrl string `json:"thumbnailUrl,omitempty" bson:"thumbnailUrl,omitempty"`
 
-	ThumbnailUrl string `json:"thumbnailUrl,omitempty"`
-
-	AddedAt time.Time `json:"addedAt,omitempty"`
+	AddedAt time.Time `json:"addedAt,omitempty" bson:"addedAt,omitempty"`
 }

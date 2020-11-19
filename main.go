@@ -20,10 +20,15 @@ import (
 func main() {
 	log.Printf("Server started")
 
-	DefaultApiService := openapi.NewDefaultApiService()
+	db, err := openapi.DbConnect("", "")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	DefaultApiService := openapi.NewDefaultApiService(db)
 	DefaultApiController := openapi.NewDefaultApiController(DefaultApiService)
 
-	QueueApiService := openapi.NewQueueApiService()
+	QueueApiService := openapi.NewQueueApiService(db)
 	QueueApiController := openapi.NewQueueApiController(QueueApiService)
 
 	router := openapi.NewRouter(DefaultApiController, QueueApiController)

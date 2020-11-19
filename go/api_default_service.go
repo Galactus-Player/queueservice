@@ -16,11 +16,12 @@ import "time"
 // This service should implement the business logic for every endpoint for the DefaultApi API.
 // Include any external packages or services that will be required by this service.
 type DefaultApiService struct {
+	db *Database
 }
 
 // NewDefaultApiService creates a default api service
-func NewDefaultApiService() DefaultApiServicer {
-	return &DefaultApiService{}
+func NewDefaultApiService(db *Database) DefaultApiServicer {
+	return &DefaultApiService{db: db}
 }
 
 // GetQueue -

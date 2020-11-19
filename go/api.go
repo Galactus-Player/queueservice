@@ -26,6 +26,7 @@ type DefaultApiRouter interface {
 // pass the data to a QueueApiServicer to perform the required actions, then write the service results to the http response.
 type QueueApiRouter interface { 
 	AddVideo(http.ResponseWriter, *http.Request)
+	RemoveVideo(http.ResponseWriter, *http.Request)
 }
 
 
@@ -44,4 +45,5 @@ type DefaultApiServicer interface {
 // and updated with the logic required for the API.
 type QueueApiServicer interface { 
 	AddVideo(string, AddVideoRequest) (interface{}, error)
+	RemoveVideo(string, RemoveVideo) (interface{}, error)
 }

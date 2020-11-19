@@ -45,6 +45,40 @@ paths:
       summary: Add video to the queue
       tags:
       - queue
+  /queue/{code}/remove:
+    post:
+      operationId: removeVideo
+      parameters:
+      - description: ID of Room
+        explode: false
+        in: path
+        name: code
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveVideo'
+        description: video id
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoveVideo'
+          description: video id and index in queue
+        "400":
+          content: {}
+          description: Invalid room code supplied
+        "404":
+          content: {}
+          description: Room not found
+      summary: Remove video from the queue
+      tags:
+      - queue
   /queue/{code}:
     get:
       description: Returns the queue
@@ -73,6 +107,17 @@ paths:
           description: Room not found
 components:
   schemas:
+    RemoveVideo:
+      description: Remove video reponse and request
+      example:
+        id: blahblah
+      properties:
+        id:
+          type: string
+      title: RemoveVideo
+      type: object
+      xml:
+        name: RemoveVideo
     AddVideoRequest:
       description: Video request
       example:

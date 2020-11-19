@@ -37,6 +37,12 @@ func (c *QueueApiController) Routes() Routes {
 			"/v1/queue/{code}/add",
 			c.AddVideo,
 		},
+		{
+			"RemoveVideo",
+			strings.ToUpper("Post"),
+			"/v1/queue/{code}/remove",
+			c.RemoveVideo,
+		},
 	}
 }
 
@@ -51,6 +57,25 @@ func (c *QueueApiController) AddVideo(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	result, err := c.service.AddVideo(code, *addVideoRequest)
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+	
+	EncodeJSONResponse(result, nil, w)
+}
+
+// RemoveVideo - Remove video from the queue
+func (c *QueueApiController) RemoveVideo(w http.ResponseWriter, r *http.Request) { 
+	params := mux.Vars(r)
+	code := params["code"]
+	removeVideo := &RemoveVideo{}
+	if err := json.NewDecoder(r.Body).Decode(&removeVideo); err != nil {
+		w.WriteHeader(500)
+		return
+	}
+	
+	result, err := c.service.RemoveVideo(code, *removeVideo)
 	if err != nil {
 		w.WriteHeader(500)
 		return
