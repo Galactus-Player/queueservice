@@ -15,12 +15,24 @@ import (
 	"net/http"
 
 	openapi "github.com/GIT_USER_ID/GIT_REPO_ID/go"
+	"github.com/tkanos/gonfig"
 )
+
+type Config struct {
+	DbName     string
+	DbPassword string
+}
 
 func main() {
 	log.Printf("Server started")
 
-	db, err := openapi.DbConnect("", "")
+	config := Config{}
+	err := gonfig.GetConf("./config.json", &config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db, err := openapi.DbConnect(config.DbName, config.DbPassword)
 	if err != nil {
 		log.Fatal(err)
 	}
