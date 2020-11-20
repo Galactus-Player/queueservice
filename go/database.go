@@ -21,7 +21,7 @@ func DbConnect(dbName string, password string) (*Database, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	atlasUrl := fmt.Sprintf("mongodb+srv://BSathvik:%s@cluster0.hrnmp.mongodb.net/%s?retryWrites=true&w=majority", password, dbName)
+	atlasUrl := fmt.Sprintf("mongodb://mongoadmin:%s@mongonet/%s?retryWrites=true&w=majority", password, dbName)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(atlasUrl))
 	if err != nil {
 		return nil, err
@@ -51,8 +51,15 @@ func (db *Database) DeleteVideo(code string, videoId string) error {
 	defer cancel()
 
 	opts := options.Update().SetUpsert(true)
-	filter := bson.D{{"_id", code}}
-	update := bson.D{{"$pull", bson.D{{"queue", bson.D{{"_id", videoId}}}}}}
+	filter := bson.M{"_id": code}
+	update := bson.M{
+		"$pull": bson.M{
+			"queue": bson.M{"_id": videoId},
+		},
+		"$inc": bson.M{
+			"counter": 1,
+		},
+	}
 
 	_, err := db.collection.UpdateOne(ctx, filter, update, opts)
 	return err

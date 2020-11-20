@@ -14,8 +14,7 @@ import (
 	"log"
 	"net/http"
 
-	openapi "github.com/GIT_USER_ID/GIT_REPO_ID/go"
-	"github.com/tkanos/gonfig"
+	openapi "github.com/Galactus-Player/queueservice/go"
 )
 
 type Config struct {
@@ -26,13 +25,13 @@ type Config struct {
 func main() {
 	log.Printf("Server started")
 
-	config := Config{}
-	err := gonfig.GetConf("./config.json", &config)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// config := Config{}
+	// err := gonfig.GetConf("./config.json", &config)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	db, err := openapi.DbConnect(config.DbName, config.DbPassword)
+	db, err := openapi.DbConnect("dockertest", "secret")
 	if err != nil {
 		log.Fatal(err)
 	}
