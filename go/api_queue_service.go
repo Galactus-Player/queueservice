@@ -40,9 +40,10 @@ func (s *QueueApiService) AddVideo(code string, addVideoRequest AddVideoRequest)
 	timestamp := time.Now()
 	hash := sha256.Sum256([]byte(addVideoRequest.Url + timestamp.String()))
 	videoId := b64.StdEncoding.EncodeToString(hash[:16])
-	video := Video{Id: videoId, Url: addVideoRequest.Url, AddedAt: timestamp, ThumbnailUrl: thumbnail}
+	video := Video{Id: videoId, Url: addVideoRequest.Url, AddedAt: timestamp, ThumbnailUrl: thumbnail, Index: 1}
 	err = s.db.InsertNewVideo(code, video)
 	if err != nil {
+		log.Printf("Error: %+v\n", err)
 		return nil, err
 	}
 	return video, nil
@@ -58,6 +59,18 @@ func getThumbnailUrl(videoUrl string) (string, error) {
 
 	thumb := fmt.Sprintf("https://img.youtube.com/vi/%s/0.jpg", videoId)
 	return thumb, nil
+}
+
+// PlayVideo - Move video to top of queue
+func (s *QueueApiService) PlayVideo(code string, playVideo PlayVideo) (interface{}, error) {
+	result, err := s.db.IncQueueCounter(code)
+	if err != nil {
+		log.Fatal(err)
+		return VideoQueue{Room: code}, err
+	}
+
+	result, err = s.db.UpdateVideoIndex(code, playVideo.Id, int(result.Counter))
+	return result, nil
 }
 
 // RemoveVideo - Remove video from the queue

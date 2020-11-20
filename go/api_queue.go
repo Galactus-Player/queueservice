@@ -25,17 +25,23 @@ type QueueApiController struct {
 
 // NewQueueApiController creates a default api controller
 func NewQueueApiController(s QueueApiServicer) Router {
-	return &QueueApiController{ service: s }
+	return &QueueApiController{service: s}
 }
 
 // Routes returns all of the api route for the QueueApiController
 func (c *QueueApiController) Routes() Routes {
-	return Routes{ 
+	return Routes{
 		{
 			"AddVideo",
 			strings.ToUpper("Post"),
 			"/v1/queue/{code}/add",
 			c.AddVideo,
+		},
+		{
+			"PlayVideo",
+			strings.ToUpper("Post"),
+			"/v1/queue/{code}/play",
+			c.PlayVideo,
 		},
 		{
 			"RemoveVideo",
@@ -47,7 +53,7 @@ func (c *QueueApiController) Routes() Routes {
 }
 
 // AddVideo - Add video to the queue
-func (c *QueueApiController) AddVideo(w http.ResponseWriter, r *http.Request) { 
+func (c *QueueApiController) AddVideo(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	code := params["code"]
 	addVideoRequest := &AddVideoRequest{}
@@ -55,18 +61,37 @@ func (c *QueueApiController) AddVideo(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(500)
 		return
 	}
-	
+
 	result, err := c.service.AddVideo(code, *addVideoRequest)
 	if err != nil {
 		w.WriteHeader(500)
 		return
 	}
-	
+
+	EncodeJSONResponse(result, nil, w)
+}
+
+// PlayVideo - Remove video from the queue
+func (c *QueueApiController) PlayVideo(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	code := params["code"]
+	playVideo := &PlayVideo{}
+	if err := json.NewDecoder(r.Body).Decode(&playVideo); err != nil {
+		w.WriteHeader(500)
+		return
+	}
+
+	result, err := c.service.PlayVideo(code, *playVideo)
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+
 	EncodeJSONResponse(result, nil, w)
 }
 
 // RemoveVideo - Remove video from the queue
-func (c *QueueApiController) RemoveVideo(w http.ResponseWriter, r *http.Request) { 
+func (c *QueueApiController) RemoveVideo(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	code := params["code"]
 	removeVideo := &RemoveVideo{}
@@ -74,12 +99,12 @@ func (c *QueueApiController) RemoveVideo(w http.ResponseWriter, r *http.Request)
 		w.WriteHeader(500)
 		return
 	}
-	
+
 	result, err := c.service.RemoveVideo(code, *removeVideo)
 	if err != nil {
 		w.WriteHeader(500)
 		return
 	}
-	
+
 	EncodeJSONResponse(result, nil, w)
 }

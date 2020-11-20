@@ -23,4 +23,6 @@ type Video struct {
 	ThumbnailUrl string `json:"thumbnailUrl,omitempty" bson:"thumbnailUrl,omitempty"`
 
 	AddedAt time.Time `json:"addedAt,omitempty" bson:"addedAt,omitempty"`
+
+	Index int32 `json:"index,omitempty" bson:"index,omitempty"`
 }

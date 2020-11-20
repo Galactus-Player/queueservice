@@ -21,4 +21,6 @@ type VideoQueue struct {
 	Queue []Video `json:"queue,omitempty" bson:"queue,omitempty"`
 
 	LastEdited time.Time `json:"lastEdited,omitempty" bson:"lastEdited,omitempty"`
+
+	Counter int32 `json:"counter,omitempty" bson:"counter,omitempty"`
 }

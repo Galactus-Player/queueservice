@@ -9,7 +9,7 @@ info:
   title: queueservice
   version: 0.0.1
 servers:
-- url: http://galactus.player/v1
+- url: http://localhost/api/
 paths:
   /queue/{code}/add:
     post:
@@ -79,6 +79,40 @@ paths:
       summary: Remove video from the queue
       tags:
       - queue
+  /queue/{code}/play:
+    post:
+      operationId: playVideo
+      parameters:
+      - description: ID of Room
+        explode: false
+        in: path
+        name: code
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayVideo'
+        description: video id
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoQueue'
+          description: Returns the entire queue
+        "400":
+          content: {}
+          description: Invalid room code supplied
+        "404":
+          content: {}
+          description: Room not found
+      summary: Move video to top of queue
+      tags:
+      - queue
   /queue/{code}:
     get:
       description: Returns the queue
@@ -118,6 +152,17 @@ components:
       type: object
       xml:
         name: RemoveVideo
+    PlayVideo:
+      description: Play video request, moves video to top of queue
+      example:
+        id: blahblah
+      properties:
+        id:
+          type: string
+      title: PlayVideo
+      type: object
+      xml:
+        name: PlayVideo
     AddVideoRequest:
       description: Video request
       example:
@@ -136,9 +181,12 @@ components:
         url: https://blah.com/foo.mp4
         id: abc123
         thumbnailUrl: https://blah.com/foo.mp4
+        index: 1
       properties:
         id:
           type: string
+        index:
+          type: integer
         url:
           type: string
         thumbnailUrl:
@@ -156,6 +204,7 @@ components:
         lastEdited: 2000-01-23T04:56:07.000+00:00
         queue: []
         room: 7898
+        counter: 3
       properties:
         room:
           type: string
@@ -166,6 +215,8 @@ components:
         lastEdited:
           format: date-time
           type: string
+        counter:
+          type: integer
       title: VideoQueue
       type: object
       xml:
