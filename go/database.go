@@ -21,7 +21,7 @@ func DbConnect(dbName string, password string) (*Database, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	atlasUrl := fmt.Sprintf("mongodb://mongoadmin:%s@some-mongo/%s?retryWrites=true&w=majority", password, dbName)
+	atlasUrl := fmt.Sprintf("mongodb://mongoadmin:%s@some-mongo/admin", password)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(atlasUrl))
 	if err != nil {
 		return nil, err
