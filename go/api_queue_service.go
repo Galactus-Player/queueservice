@@ -13,9 +13,7 @@ package openapi
 import (
 	"crypto/sha256"
 	b64 "encoding/base64"
-	"fmt"
 	"log"
-	"net/url"
 	"time"
 )
 
@@ -33,32 +31,28 @@ func NewQueueApiService(db *Database) QueueApiServicer {
 
 // AddVideo - Add video to the queue
 func (s *QueueApiService) AddVideo(code string, addVideoRequest AddVideoRequest) (interface{}, error) {
-	thumbnail, err := getThumbnailUrl(addVideoRequest.Url)
+	thumbnail, title, err := getVideoMetadata(addVideoRequest.Url)
 	if err != nil {
 		log.Fatal(err)
 	}
 	timestamp := time.Now()
 	hash := sha256.Sum256([]byte(addVideoRequest.Url + timestamp.String()))
 	videoId := b64.StdEncoding.EncodeToString(hash[:16])
-	video := Video{Id: videoId, Url: addVideoRequest.Url, AddedAt: timestamp, ThumbnailUrl: thumbnail, Index: 1}
+	video := Video{
+		Id:           videoId,
+		Url:          addVideoRequest.Url,
+		AddedAt:      timestamp,
+		ThumbnailUrl: thumbnail,
+		Title:        title,
+		Index:        1,
+	}
+	log.Printf("Video: %+v\n", video)
 	err = s.db.InsertNewVideo(code, video)
 	if err != nil {
 		log.Printf("Error: %+v\n", err)
 		return nil, err
 	}
 	return video, nil
-}
-
-func getThumbnailUrl(videoUrl string) (string, error) {
-	u, err := url.Parse(videoUrl)
-	if err != nil {
-		return "", err
-	}
-	q := u.Query()
-	videoId := q.Get("v")
-
-	thumb := fmt.Sprintf("https://img.youtube.com/vi/%s/0.jpg", videoId)
-	return thumb, nil
 }
 
 // PlayVideo - Move video to top of queue

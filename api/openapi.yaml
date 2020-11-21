@@ -191,6 +191,8 @@ components:
           type: string
         thumbnailUrl:
           type: string
+        title:
+          type: string
         addedAt:
           format: date-time
           type: string

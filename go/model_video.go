@@ -25,4 +25,6 @@ type Video struct {
 	AddedAt time.Time `json:"addedAt,omitempty" bson:"addedAt,omitempty"`
 
 	Index int32 `json:"index,omitempty" bson:"index,omitempty"`
+
+	Title string `json:"title,omitempty" bson:"title,omitempty"`
 }
