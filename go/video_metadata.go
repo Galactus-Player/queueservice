@@ -12,7 +12,7 @@ func getVideoMetadata(videoUrl string) (string, string, error) {
 	vid := getYouTubeID(videoUrl)
 	thumb := fmt.Sprintf("https://img.youtube.com/vi/%s/0.jpg", vid)
 
-	req_str := fmt.Sprintf("https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=%s&format=json", vid)
+	req_str := fmt.Sprintf("http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=%s&format=json", vid)
 	resp, err := http.Get(req_str)
 	log.Printf("Error meta: %+v\n", err)
 	if err != nil {
